@@ -47,7 +47,7 @@ double HybridAstarWithObstaclePressure::computeHeuristicCostOfStateNode(NodeStat
                                               goal_state.info.driveState.pose); 
     // (ii) use an obstacle around. 
     double proximity_cost = computeProximityCost(state.info.driveState.pose); 
-    double total = distance.value + proximity_cost * 10 ; 
+    double total = distance.value * 0.5 + proximity_cost * 10 ; 
     // std::cout << " cost = "<<total<< std::endl; 
     return total; 
 }
@@ -63,7 +63,13 @@ std::string HybridAstarWithObstaclePressure::getHash(NodeState state) const{
 //
 double HybridAstarWithObstaclePressure::computeCostOfReachingStateNode(NodeState from_node , NodeState to_node, PlanningCommand command) const{
     double cost = HybridAstarPlanner::computeCostOfReachingStateNode(from_node,to_node,command);
+    units::Degree prevdeg = metricmath::radianToDegree(from_node.info.driveState.steeringAngle); 
+    units::Degree deg = metricmath::radianToDegree(to_node.info.driveState.steeringAngle); 
 
+    cost = cost + abs(deg.value - prevdeg.value) * 2; 
+    if ( command.speed.value < 0){
+        cost += 5; 
+    }
     return cost ; 
 
 } 
@@ -72,7 +78,7 @@ double HybridAstarWithObstaclePressure::computeCostOfReachingStateNode(NodeState
 bool HybridAstarWithObstaclePressure:: isGoalState(NodeState state, NodeState goal) const{
     bool result = ( state.xId == goal.xId && 
                     state.yId == goal.yId && 
-                    state.orientationId == goal.orientationId );
+                    abs(state.orientationId - goal.orientationId) <= 1 );
     return result;
     // return HybridAstarPlanner::isGoalState(state,goal);
 }
@@ -85,14 +91,18 @@ std::vector<NodeState> HybridAstarWithObstaclePressure::getReachableNodeStates(N
     vehicle::DriveState drivestate = parent_state.info.driveState; 
     drivestate.steeringAngle = metricmath::degreeToRadian(units::Degree{0});
     // create planning command 
+    units::Meter gridres = _occupancyMap->getResolution(); 
+    double speed_value = std::sqrt(2 * gridres.value * gridres.value) * 1.5; 
+    //
     PlanningCommand command; 
     command.timeStep = units::Second {1}; 
-    command.speed    = units::MeterPerSecond{0.1}; 
+    command.speed    = units::MeterPerSecond{speed_value}; 
+    command.steeringAngle = units::Radian{0};   
     command.steeringAngle = units::Radian{0};   
     // with steering angles: 10 deg(left), 0deg, 10 deg(right) 
     std::vector<units::Radian> steer_angles;
     // {-5,-1,0,1,5}
-    for ( double x : {-5,-1,0,1,5}){
+    for ( double x : {-40,0,40}){
         steer_angles.push_back( metricmath::degreeToRadian(units::Degree{x}));        
     }
     std::vector<units::MeterPerSecond> speeds = {units::MeterPerSecond{0.1},

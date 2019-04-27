@@ -290,13 +290,16 @@ std::vector<NodeState> HybridAstarPlanner::getReachableNodeStates(NodeState pare
     vehicle::DriveState drivestate = parent_state.info.driveState; 
     drivestate.steeringAngle = metricmath::degreeToRadian(units::Degree{0});
     // create planning command 
+    units::Meter gridres = _occupancyMap->getResolution(); 
+    double speed_value = std::sqrt(2 * gridres.value * gridres.value) * 1.5; 
+    //
     PlanningCommand command; 
     command.timeStep = units::Second {1}; 
-    command.speed    = units::MeterPerSecond{0.1}; 
+    command.speed    = units::MeterPerSecond{speed_value}; 
     command.steeringAngle = units::Radian{0};   
     // with steering angles: 10 deg(left), 0deg, 10 deg(right) 
     std::vector<units::Radian> steer_angles;
-    for ( double x : {-2,-1,0,1,2}){
+    for ( double x : {-40,0,40}){
         steer_angles.push_back( metricmath::degreeToRadian(units::Degree{x}));        
     }
     // get the hash of this state

@@ -172,7 +172,8 @@ def showPlan(planfilepath,pause=False):
 ###########################
 GENERATED_PATHS_DIR = './src/generated_paths/'
 # showPlan("./src/generated_paths/simpleplan.tplan")
-showPlan(GENERATED_PATHS_DIR + 'hybridpressure.tplan',pause=False)
+showPlan(GENERATED_PATHS_DIR + 'hybridpressure.tplan',pause=True)
+# showPlan(GENERATED_PATHS_DIR + 'hybrid.tplan',pause=False)
 
 while 1: 
     a = input("Done") 

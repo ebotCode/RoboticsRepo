@@ -94,7 +94,7 @@ void hybridAstarPlanner(vehicle::DriveState start_drivestate,
                                 const map::OccupancyMap& occupancy_map){
     std::cout << "hybridAstarPlanner " << std::endl; 
     // create a start drive state. 
-    units::Radian orientation_resolution = metricmath::degreeToRadian(units::Degree{2});
+    units::Radian orientation_resolution = metricmath::degreeToRadian(units::Degree{5});
     units::Radian steering_resolution    = metricmath::degreeToRadian(units::Degree{10});
     planner::HybridAstarPlanner pathplanner(occupancy_map,orientation_resolution,
                                                           steering_resolution);    
@@ -119,7 +119,7 @@ void hybridAstarPlannerWithPressure(vehicle::DriveState start_drivestate,
                                 const map::OccupancyMap& occupancy_map){
     std::cout << "hybridAstarPlanner " << std::endl; 
     // create a start drive state. 
-    units::Radian orientation_resolution = metricmath::degreeToRadian(units::Degree{2});
+    units::Radian orientation_resolution = metricmath::degreeToRadian(units::Degree{5});
     units::Radian steering_resolution    = metricmath::degreeToRadian(units::Degree{10});
     planner::HybridAstarWithObstaclePressure pathplanner(occupancy_map,orientation_resolution,
                                                           steering_resolution);    
@@ -181,8 +181,8 @@ void testDifferentPlanner2(){
     steeringConfig.maxSteering = units::Radian{15 * 3.141 / 180.0};
     steeringConfig.instantSteering = units::Radian{15 * 3.141 / 180.0};
     vehicle::SimpleCarDimension carDimension; 
-    carDimension.length = units::Meter{0.2}; 
-    carDimension.width  = units::Meter{0.1}; 
+    carDimension.length = units::Meter{0.6}; 
+    carDimension.width  = units::Meter{0.4}; 
     vehicle::SimpleCar vehicleModel(carDimension,steeringConfig);  
  
     vehicle::DriveState start_drivestate; 
